@@ -40,7 +40,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           Thank you for your purchase!
         </Typography>
         <Typography
-          sx={{ margin: '30px 0' }}
+          sx={{ margin: "30px 0" }}
           variant="subtitle1"
           align="center"
           color="textSecondary"

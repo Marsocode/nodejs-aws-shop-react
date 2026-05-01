@@ -1,0 +1,43 @@
+import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdn from 'aws-cdk-lib/aws-cloudfront';
+import * as s3Deploy from 'aws-cdk-lib/aws-s3-deployment';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+import { PREFIX, BUCKET_NAME } from '../consts';
+
+export interface StaticSiteProps extends cdk.StackProps {
+  sitePath: string;
+}
+
+export class StaticSite extends Construct {
+  public readonly url: string;
+
+  constructor(scope: Construct, id: string, props: StaticSiteProps) {
+    super(scope, id);
+
+    const bucket = new s3.Bucket(this, `${PREFIX}Bucket`, {
+      bucketName: `${BUCKET_NAME}-${cdk.Stack.of(this).account}-${cdk.Stack.of(this).region}`,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    const distribution = new cdn.Distribution(this, `${PREFIX}Distribution`, {
+      defaultBehavior: {
+        origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+        viewerProtocolPolicy: cdn.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
+      defaultRootObject: 'index.html',
+    });
+
+    new s3Deploy.BucketDeployment(this, `${PREFIX}Deployment`, {
+      sources: [s3Deploy.Source.asset(props.sitePath)],
+      destinationBucket: bucket,
+      distribution,
+      distributionPaths: ['/*'],
+    });
+
+    this.url = `https://${distribution.domainName}`;
+  }
+}

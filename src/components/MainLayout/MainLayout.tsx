@@ -39,6 +39,15 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         >
           Thank you for your purchase!
         </Typography>
+        <Typography
+          sx={{ margin: "30px 0" }}
+          variant="subtitle1"
+          align="center"
+          color="textSecondary"
+          component="p"
+        >
+          We look forward to seeing you again ≽^•⩊•^≼
+        </Typography>
         <Copyright />
       </Box>
     </>

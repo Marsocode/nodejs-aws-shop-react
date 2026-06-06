@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import Container from "@mui/material/Container";
@@ -19,6 +20,8 @@ function Copyright() {
 }
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/login";
   return (
     <>
       <Header />
@@ -27,29 +30,34 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           {children}
         </Container>
       </main>
-      <Box
-        component={"footer"}
-        sx={{ bgcolor: (theme) => theme.palette.background.paper, padding: 6 }}
-      >
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="textSecondary"
-          component="p"
+      {!isLoginPage && (
+        <Box
+          component={"footer"}
+          sx={{
+            bgcolor: (theme) => theme.palette.background.paper,
+            padding: 6,
+          }}
         >
-          Thank you for your purchase!
-        </Typography>
-        <Typography
-          sx={{ margin: "30px 0" }}
-          variant="subtitle1"
-          align="center"
-          color="textSecondary"
-          component="p"
-        >
-          We look forward to seeing you again ≽^•⩊•^≼
-        </Typography>
-        <Copyright />
-      </Box>
+          <Typography
+            variant="subtitle1"
+            align="center"
+            color="textSecondary"
+            component="p"
+          >
+            Thank you for your purchase!
+          </Typography>
+          <Typography
+            sx={{ margin: "30px 0" }}
+            variant="subtitle1"
+            align="center"
+            color="textSecondary"
+            component="p"
+          >
+            We look forward to seeing you again ≽^•⩊•^≼
+          </Typography>
+          <Copyright />
+        </Box>
+      )}
     </>
   );
 };

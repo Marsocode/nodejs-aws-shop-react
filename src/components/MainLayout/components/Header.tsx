@@ -1,4 +1,6 @@
 import React from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -11,7 +13,10 @@ import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";
 
 export default function Header() {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const open = Boolean(anchorEl);
   const auth = true;
 
@@ -22,6 +27,28 @@ export default function Header() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("authorization_token");
+    window.dispatchEvent(new Event("authChanged"));
+    setIsLoggedIn(false);
+    handleClose();
+    navigate("/login");
+  };
+
+  useEffect(() => {
+    const updateAuth = () => {
+      setIsLoggedIn(!!localStorage.getItem("authorization_token"));
+    };
+
+    updateAuth();
+
+    window.addEventListener("authChanged", updateAuth);
+
+    return () => {
+      window.removeEventListener("authChanged", updateAuth);
+    };
+  }, []);
 
   return (
     <AppBar position="relative" color="secondary">
@@ -49,6 +76,7 @@ export default function Header() {
             >
               <AccountCircle />
             </IconButton>
+
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
@@ -64,6 +92,17 @@ export default function Header() {
               open={open}
               onClose={handleClose}
             >
+              {isLoggedIn ? (
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              ) : (
+                <MenuItem
+                  component={RouterLink}
+                  to="/login"
+                  onClick={handleClose}
+                >
+                  Login
+                </MenuItem>
+              )}
               <MenuItem
                 component={RouterLink}
                 to="/admin/orders"

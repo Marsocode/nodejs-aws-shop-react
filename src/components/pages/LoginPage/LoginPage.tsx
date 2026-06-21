@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = (e:any): void => {
+  const handleLogin = (e: any): void => {
     e.preventDefault();
 
     if (!login || !password) {
